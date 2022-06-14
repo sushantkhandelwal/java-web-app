@@ -5,10 +5,10 @@ checkout scm
 }
 stage('SonarQube Analysis')
 {
-def scannerHome = tool 'sonarqube';
+def scannerHome = tool 'sonarqubedemo';
 withSonarQubeEnv()
 {
-bat "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=TESTAPP2"
+bat "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=sonarqubedemo"
 }
 }
 stage("Build Result")
