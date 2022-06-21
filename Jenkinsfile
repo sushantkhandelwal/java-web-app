@@ -1,28 +1,38 @@
-pipeline {
-  agent { label 'linux' }
-  options {
-    buildDiscarder(logRotator(numToKeepStr: '5'))
-  }
-  environment {
-    CI = true
-    ARTIFACTORY_ACCESS_TOKEN = credentials('artifactory-access-token')
-  }
-  stages {
-    stage('Build') {
-      steps {
-        sh './mvnw clean install'
-      }
-    }
-    stage('Upload to Artifactory') {
-      agent {
-        docker {
-          image 'releases-docker.jfrog.io/jfrog/jfrog-cli-v2:2.2.0' 
-          reuseNode true
-        }
-      }
-      steps {
-        sh 'jfrog rt upload --url http://192.168.1.230:8082/artifactory/ --access-token ${ARTIFACTORY_ACCESS_TOKEN} target/demo-0.0.1-SNAPSHOT.jar java-web-app/'
-      }
-    }
-  }
+node {
+stage('SCM') {
+checkout scm
+}
+stage('SonarQube Analysis')
+{
+def scannerHome = tool 'sonarqubedemo';
+withSonarQubeEnv()
+{
+bat "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=sonarqubedemo"
+}
+}
+stage("UPLOAD TO JFROG")
+{
+def server = Artifactory.server "jfrogdemo"
+def buildInfo = Artifactory.newBuildInfo()
+buildInfo.env.capture = true
+buildInfo.env.collect()
+def uploadSpec = """{
+"files": [
+{
+"pattern": "**/target/*.jar",
+"target": "libs-snapshot-local"
+}, {
+"pattern": "**/target/*.pom",
+"target": "libs-snapshot-local"
+}, {
+"pattern": "**/target/*.war",
+"target": "libs-snapshot-local"
+}
+]
+}"""
+// Upload to Artifactory.
+server.upload spec: uploadSpec, buildInfo: buildInfo
+buildInfo.retention maxBuilds: 10, maxDays: 7, deleteBuildArtifacts: true
+// Publish build info.
+server.publishBuildInfo buildInfo
 }
