@@ -4,10 +4,10 @@ checkout scm
 }
 stage('SonarQube analysis')
 {
-def scannerHome = tool 'sonarqubedemo';
+def scannerHome = tool 'jenkinsdemo';
 withSonarQubeEnv()
 {
-bat "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=sonarqubedemo"
+bat "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jenkinsdemo"
 }
 }
 stage("UPLOAD TO JFROG")
