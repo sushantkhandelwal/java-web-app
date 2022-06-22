@@ -2,9 +2,9 @@ node {
 stage('SCM') {
 checkout scm
 }
-stage('SonarQube Analysis')
+stage('SonarQube analysis')
 {
-def scannerHome = tool 'sonarqubedemo';
+def scannerHome = tool 'jfrogdemo';
 withSonarQubeEnv()
 {
 bat "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=sonarqubedemo"
