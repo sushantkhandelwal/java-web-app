@@ -2,14 +2,12 @@ node {
 stage('SCM') {
 checkout scm
 }
-stage('SonarQube analysis')
-{
-def scannerHome = tool 'jenkinsdemo';
-withSonarQubeEnv()
-{
-bat "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jenkinsdemo"
-}
-}
+ stage('SonarQube Analysis') {
+    def scannerHome = tool 'demosonar';
+    withSonarQubeEnv() {
+      sh "${scannerHome}/bin/sonar-scanner"
+    }
+  }
 stage("UPLOAD TO JFROG")
 {
 def server = Artifactory.server "java-web-app"
