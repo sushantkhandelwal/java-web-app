@@ -12,7 +12,7 @@ bat "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=sonarqubedemo"
 }
 stage("UPLOAD TO JFROG")
 {
-def server = Artifactory.server "jfrogdemo"
+def server = Artifactory.server "java-web-app"
 def buildInfo = Artifactory.newBuildInfo()
 buildInfo.env.capture = true
 buildInfo.env.collect()
